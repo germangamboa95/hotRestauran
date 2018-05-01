@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Book It!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+
+</head>
+<body>
+    <div class="jumbotron text-center">
+        <h1>The Snakehole lounge</h1>
+        <h3>Make a reservation below!</h3>
+        <p>But hurry!  <br> This is an exclusive party for only 5 groups.</p>
+        <a href="" class="btn btn-warning">Check Current Reservations</a>
+    </div>
+    <div class="container">
+        <div class="card card-body my-5">
+                <h2 class="text-center">RESERVATION FORM</h2>
+                <form>
+                    <label for="name">Group Name:</label>
+                    <input id="name"   class="form-control" type="text">
+
+                    <label for="phone">Phone Number:</label>
+                    <input id="phone" class="form-control" type="text">
+
+            
+                    <label for="email">Email:</label>
+                    <input id="email" class="form-control" type="text">
+
+                    <label for="id">Group Nickname:</label>
+                    <input id="id" class="form-control" type="text">
+
+                    <div id="submit" class="btn btn-primary btn-block mt-2">Submit</div>
+                </form>
+
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <script>
+
+        $('#submit').on('click', function(e){
+            e.preventDefault();
+            const reservation = {};
+            reservation.name = $('#name').val().trim(); 
+            $('#name').val('');
+            reservation.phone = $('#phone').val().trim(); 
+            $('#phone').val('')
+            reservation.email = $('#email').val().trim(); 
+            $('#email').val('')
+            reservation.id = $('#id').val().trim(); 
+            $('#id').val('');
+
+            fetch('/api/reserve',{
+                method: 'post',
+                headers: {
+                    'content-type': 'application/json'
+                },
+                body: JSON.stringify(reservation)
+            })
+            .then(res => {
+                const bool = res.body.locked
+                const message = (bool)? "See you when you arrive!" : "You are on the wait list.";
+
+                $('.container').prepend(`<h2 class="alert alert-info">${message}</h2>`);
+            })
+        
+
+        
+        });
+
+    </script>
+</body>
+</html>
