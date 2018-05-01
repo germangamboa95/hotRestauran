@@ -7,7 +7,7 @@ var path = require("path");
 // Sets up the Express App
 // =============================================================
 var app = express();
-var PORT = 3000;
+var PORT = process.env.PORT || 3000;
 
 // Sets up the Express app to handle data parsing
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -15,28 +15,46 @@ app.use(bodyParser.json());
 
 // Star Wars Characters (DATA)
 // =============================================================
-var characters = [
+var tables = [
   {
-    routeName: "yoda",
-    name: "Yoda",
-    role: "Jedi Master",
-    age: 900,
-    forcePoints: 2000
+    name: "Yoda old",
+    phoneNumber: "1800999999",
+    email: "yoda@jedi.com",
+    id: "yoda1"
   },
   {
-    routeName: "darthmaul",
-    name: "Darth Maul",
-    role: "Sith Lord",
-    age: 200,
-    forcePoints: 1200
+    name: "Yoda old",
+    phoneNumber: "1800999999",
+    email: "yoda@jedi.com",
+    id: "yoda1"
   },
   {
-    routeName: "obiwankenobi",
-    name: "Obi Wan Kenobi",
-    role: "Jedi Master",
-    age: 55,
-    forcePoints: 1350
+    name: "Yoda old",
+    phoneNumber: "1800999999",
+    email: "yoda@jedi.com",
+    id: "yoda1"
+  },
+  {
+    name: "Yoda old",
+    phoneNumber: "1800999999",
+    email: "yoda@jedi.com",
+    id: "yoda1"
+  },  
+  {
+    name: "Yoda old",
+    phoneNumber: "1800999999",
+    email: "yoda@jedi.com",
+    id: "yoda1"
   }
+];
+
+var waitList =[
+  {
+  name: "Kylo Ren",
+  phoneNumber: "9999999999",
+  email: "kylo@1storder.com",
+  id: "kylo"
+}
 ];
 
 // Routes
@@ -44,52 +62,43 @@ var characters = [
 
 // Basic route that sends the user first to the AJAX Page
 app.get("/", function(req, res) {
-  res.sendFile(path.join(__dirname, "view.html"));
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
-app.get("/add", function(req, res) {
-  res.sendFile(path.join(__dirname, "add.html"));
+app.get("/tables", function(req, res) {
+  res.sendFile(path.join(__dirname, "tables.html"));
 });
 
-// Displays all characters
-app.get("/api/characters", function(req, res) {
-  return res.json(characters);
+app.get("/reserve", function(req, res) {
+  res.sendFile(path.join(__dirname, "reserve.html"));
 });
+
 
 // Displays a single character, or returns false
-app.get("/api/characters/:character", function(req, res) {
-  var chosen = req.params.character;
+app.post("/api/reserve", function(req, res) {
+  var table = req.body;
 
-  console.log(chosen);
-
-  for (var i = 0; i < characters.length; i++) {
-    if (chosen === characters[i].routeName) {
-      return res.json(characters[i]);
-    }
+  if (tables.length<5){
+    tables.push(table);
+    res.send(true);
   }
-
-  return res.json(false);
+ 
+  else if (tables.length>=5){
+    waitList.push(table);
+    res.send(false);
+  }
 });
 
 // Create New Characters - takes in JSON input
-app.post("/api/characters", function(req, res) {
-  // req.body hosts is equal to the JSON post sent from the user
-  // This works because of our body-parser middleware
-  var newcharacter = req.body;
+app.get("/api/tables", function(req, res) {
 
-  // Using a RegEx Pattern to remove spaces from newCharacter
-  // You can read more about RegEx Patterns later https://www.regexbuddy.com/regex.html
-  newcharacter.routeName = newcharacter.name.replace(/\s+/g, "").toLowerCase();
+  tableList= tables.concat(waitList);
 
-  console.log(newcharacter);
+  res.send(JSON.stringify(tableList));
 
-  characters.push(newcharacter);
 
-  res.json(newcharacter);
 });
-
-// Starts the server to begin listening
-// =============================================================
-app.listen(PORT, function() {
-  console.log("App listening on PORT " + PORT);
-});
+app.listen(PORT, function(err){
+  if (err) throw err
+  console.log("server running");
+})
